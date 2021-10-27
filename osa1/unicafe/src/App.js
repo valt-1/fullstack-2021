@@ -9,6 +9,13 @@ const Button = ({ handleClick, text }) => {
 }
 
 const Statistics = (props) => {
+  if (props.counter === 0) {
+    return (
+      <div>
+        No feedback given
+      </div>
+    )
+  }
   return (
     <div>
       <p>good {props.good}</p>
