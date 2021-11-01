@@ -14,6 +14,20 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault()
+
+    if (newName === '') {
+      alert('Please enter a name')
+      return
+    }
+
+    const nameMatches = persons.filter(person => 
+      person.name.toLowerCase() === newName.toLowerCase())
+    if (nameMatches.length > 0) {
+      alert(`${newName} is already added to phonebook`)
+      setNewName('')
+      return
+    }
+
     const personObject = {
       name: newName
     }
