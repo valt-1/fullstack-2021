@@ -26,7 +26,20 @@ const App = () => {
     const nameMatches = persons.filter(person => 
       person.name.toLowerCase() === newName.toLowerCase())
     if (nameMatches.length > 0) {
-      alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const person = persons.find(p => p.name.toLowerCase() === newName.toLowerCase())
+        const id = person.id
+        const changedPerson = { ...person, number: newNumber }
+        personService
+          .update(id, changedPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+          })
+          .catch(error => {
+            alert(`${person.name} was already deleted from server`)
+            setPersons(persons.filter(p => p.id !== id))
+        })
+      }
       setNewName('')
       setNewNumber('')
       return
