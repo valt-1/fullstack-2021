@@ -2,8 +2,8 @@ import React from 'react'
 
 const Notification = ({ message }) => {
   const style = {
-    color: 'seagreen',
-    background: 'aquamarine',
+    color: 'black',
+    background: 'lightgray',
     borderRadius: 10,
     padding: 8
   }

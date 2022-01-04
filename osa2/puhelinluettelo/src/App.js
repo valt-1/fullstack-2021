@@ -6,7 +6,7 @@ import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filterStr, setFilterStr ] = useState('')
@@ -19,48 +19,48 @@ const App = () => {
   }
   useEffect(hook, [])
 
+  const notify = (message) => {
+    setNotification(message)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
+
   const addPerson = (event) => {
     event.preventDefault()
-    if (newName === '' || newNumber === '') {
-      alert('Please enter a name and a number')
-      return
-    }
-    const nameMatches = persons.filter(person => 
+    const existing = persons.filter(person => 
       person.name.toLowerCase() === newName.toLowerCase())
-    if (nameMatches.length > 0) {
+    if (existing.length > 0) {
+      const existingPerson = existing[0]
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const person = persons.find(p => p.name.toLowerCase() === newName.toLowerCase())
-        const id = person.id
-        const changedPerson = { ...person, number: newNumber }
         personService
-          .update(id, changedPerson)
+          .update(existingPerson.id, {name: existingPerson.name, number: newNumber})
           .then(returnedPerson => {
-            setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+            setPersons(persons.map(person => person.id !== existingPerson.id ? person : returnedPerson))
+            setNewName('')
+            setNewNumber('')
           })
           .catch(error => {
-            alert(`${person.name} was already deleted from server`)
-            setPersons(persons.filter(p => p.id !== id))
-        })
+            notify(error.response.data.error)
+          })
       }
-      setNewName('')
-      setNewNumber('')
-      return
+    } else {
+      const personObject = {
+        name: newName,
+        number: newNumber
+      }
+      personService
+        .create(personObject)
+        .then(person => {
+          setPersons(persons.concat(person))
+          notify(`Added ${person.name}`)
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          notify(error.response.data.error)
+        })
     }
-    const personObject = {
-      name: newName,
-      number: newNumber
-    }
-    personService
-      .create(personObject)
-      .then(person => {
-        setPersons(persons.concat(person))
-        setNotification(`Added ${person.name}`)
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-        setNewName('')
-        setNewNumber('')
-      })
   }
 
   const handleNameChange = (event) => {
