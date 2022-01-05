@@ -100,7 +100,7 @@ describe('favorite blog', () => {
 
 })
 
-describe(' most blogs', () => {
+describe('most blogs', () => {
 
   test('returns author with the most blogs', () => {
     const result = listHelper.mostBlogs(blogs)
@@ -114,6 +114,25 @@ describe(' most blogs', () => {
 
   test('returns undefined when blog list is empty', () => {
     const result = listHelper.mostBlogs([])
+    expect(result).toBeUndefined()
+  })
+
+})
+
+describe('most likes', () => {
+
+  test('returns author with the most likes', () => {
+    const result = listHelper.mostLikes(blogs)
+    expect(result).toEqual({ author: 'Edsger W. Dijkstra', likes: 17 })
+  })
+
+  test('returns the only author when list has only one blog', () => {
+    const result = listHelper.mostLikes([blogs[0]])
+    expect(result).toEqual({ author: 'Michael Chan', likes: 7 })
+  })
+
+  test('returns undefined when blog list is empty', () => {
+    const result = listHelper.mostLikes([])
     expect(result).toBeUndefined()
   })
 

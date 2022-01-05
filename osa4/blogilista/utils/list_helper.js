@@ -26,16 +26,34 @@ const mostBlogs = (blogs) => {
   const blogCountPairs = lodash.toPairs(blogCountObject)
 
   let most = blogCountPairs[0]
-  for(let i = 0; i < blogCountPairs.length; i++) {
+  for (let i = 0; i < blogCountPairs.length; i++) {
     if (blogCountPairs[i][1] > most[1]) most = blogCountPairs[i]
   }
 
   return { author: most[0], blogs: most[1] }
 }
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) return undefined
+
+  const blogsByAuthor = lodash.groupBy(blogs, 'author')
+
+  const reduceToLikes = (blogList) => blogList.reduce((sum, blog) => sum + blog.likes, 0)
+  const likesByAuthor = lodash.mapValues(blogsByAuthor, reduceToLikes)
+  const likeCountPairs = lodash.toPairs(likesByAuthor)
+
+  let most = likeCountPairs[0]
+  for (let i = 0; i < likeCountPairs.length; i++) {
+    if (likeCountPairs[i][1] > most[1]) most = likeCountPairs[i]
+  }
+
+  return { author: most[0], likes: most[1] }
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 }
