@@ -67,71 +67,121 @@ describe('when there are some blogs initially saved in DB', () => {
 
   describe('POST /api/blogs', () => {
 
-    test('adds valid blog with correct properties', async () => {
-      const newBlog = {
-        title: 'Canonical string reduction',
-        author: 'Edsger W. Dijkstra',
-        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-        likes: 12
-      }
+    describe('when user is authenticated with token', () => {
 
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
+      let token
 
-      const blogsAtEnd = await helper.blogsInDb()
-      const titles = blogsAtEnd.map(blog => blog.title)
+      beforeEach(async () => {
+        await User.deleteMany({})
+        const passwordHash = await bcrypt.hash('secret', 10)
+        const user = new User({
+          username: 'user1',
+          passwordHash
+        })
+        await user.save()
 
-      expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
-      expect(titles).toContain('Canonical string reduction')
+        const response = await api
+          .post('/api/login')
+          .send({
+            username: 'user1',
+            password: 'secret'
+          })
+        token = response.body.token
+      })
+
+      test('adds valid blog with correct properties', async () => {
+        const newBlog = {
+          title: 'Canonical string reduction',
+          author: 'Edsger W. Dijkstra',
+          url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+          likes: 12
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set({ Authorization: `bearer ${token}` })
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        const titles = blogsAtEnd.map(blog => blog.title)
+
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+        expect(titles).toContain('Canonical string reduction')
+      })
+
+      test('sets likes to 0 if likes property is not specified', async () => {
+        const newBlog = {
+          title: 'Canonical string reduction',
+          author: 'Edsger W. Dijkstra',
+          url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
+        }
+
+        const response = await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set({ Authorization: `bearer ${token}` })
+
+        expect(response.body.likes).toBe(0)
+      })
+
+      test('does not add blog with no title, responds with 400', async () => {
+        const newBlog = {
+          author: 'Edsger W. Dijkstra',
+          url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+          likes: 12
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set({ Authorization: `bearer ${token}` })
+          .expect(400)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+      })
+
+      test('does not add blog with no url, responds with 400', async () => {
+        const newBlog = {
+          title: 'Canonical string reduction',
+          author: 'Edsger W. Dijkstra',
+          likes: 12
+        }
+
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .set({ Authorization: `bearer ${token}` })
+          .expect(400)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+      })
+
     })
 
-    test('sets likes to 0 if likes property is not specified', async () => {
-      const newBlog = {
-        title: 'Canonical string reduction',
-        author: 'Edsger W. Dijkstra',
-        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
-      }
+    describe('when no token is provided', () => {
 
-      const response = await api
-        .post('/api/blogs')
-        .send(newBlog)
+      test('does not add blog without token, responds with 401', async () => {
+        const newBlog = {
+          title: 'Canonical string reduction',
+          author: 'Edsger W. Dijkstra',
+          url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+          likes: 12
+        }
 
-      expect(response.body.likes).toBe(0)
-    })
+        await api
+          .post('/api/blogs')
+          .send(newBlog)
+          .expect(401)
 
-    test('does not add blog with no title, responds with 400', async () => {
-      const newBlog = {
-        author: 'Edsger W. Dijkstra',
-        url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-        likes: 12
-      }
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+      })
 
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
 
-      const blogsAtEnd = await helper.blogsInDb()
-      expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
-    })
-
-    test('does not add blog with no url, responds with 400', async () => {
-      const newBlog = {
-        title: 'Canonical string reduction',
-        author: 'Edsger W. Dijkstra',
-        likes: 12
-      }
-
-      await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(400)
-
-      const blogsAtEnd = await helper.blogsInDb()
-      expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
     })
 
   })
