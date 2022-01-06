@@ -33,6 +33,36 @@ describe('when there are some blogs initially saved in DB', () => {
 
   })
 
+  describe('GET /api/blogs/:id', () => {
+
+    test('viewing a blog succeeds when id is valid', async () => {
+      const blogsAtStart = await helper.blogsInDb()
+      const blogToView = blogsAtStart[0]
+
+      const response = await api
+        .get(`/api/blogs/${blogToView.id}`)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+      expect(response.body).toEqual(blogToView)
+    })
+
+    test('responds with 404 if blog with given id does not exist', async () => {
+      const id = await helper.nonExistingId()
+      await api
+        .get(`/api/blogs/${id}`)
+        .expect(404)
+    })
+
+    test('responds with 400 if id is invalid', async () => {
+      const id = 'asdf'
+      await api
+        .get(`/api/blogs/${id}`)
+        .expect(400)
+    })
+
+  })
+
   describe('POST /api/blogs', () => {
 
     test('adds valid blog with correct properties', async () => {
