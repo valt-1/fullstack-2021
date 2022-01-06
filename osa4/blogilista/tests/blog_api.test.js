@@ -6,20 +6,16 @@ const Blog = require('../models/blog')
 
 const initialBlogs = [
   {
-    _id: '5a422a851b54a676234d17f7',
     title: 'React patterns',
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
-    likes: 7,
-    __v: 0
+    likes: 7
   },
   {
-    _id: '5a422aa71b54a676234d17f8',
     title: 'Go To Statement Considered Harmful',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-    __v: 0
+    likes: 5
   }
 ]
 
@@ -47,12 +43,10 @@ test('id property of blog is formatted correctly', async () => {
 
 test('POST /api/blogs adds new blog with correct properties', async () => {
   const newBlog = {
-    _id: '5a422b3a1b54a676234d17f9',
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12,
-    __v: 0
+    likes: 12
   }
 
   await api
@@ -70,11 +64,9 @@ test('POST /api/blogs adds new blog with correct properties', async () => {
 
 test('POST /api/blogs sets likes to 0 if likes property is not specified', async () => {
   const newBlog = {
-    _id: '5a422b3a1b54a676234d17f9',
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
-    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    __v: 0
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html'
   }
 
   const response = await api
@@ -86,11 +78,9 @@ test('POST /api/blogs sets likes to 0 if likes property is not specified', async
 
 test('POST /api/blogs does not add blog with no title, responds with 400', async () => {
   const newBlog = {
-    _id: '5a422b3a1b54a676234d17f9',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-    likes: 12,
-    __v: 0
+    likes: 12
   }
 
   await api
@@ -104,11 +94,9 @@ test('POST /api/blogs does not add blog with no title, responds with 400', async
 
 test('POST /api/blogs does not add blog with no url, responds with 400', async () => {
   const newBlog = {
-    _id: '5a422b3a1b54a676234d17f9',
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
-    likes: 12,
-    __v: 0
+    likes: 12
   }
 
   await api
