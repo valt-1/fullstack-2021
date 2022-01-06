@@ -1,8 +1,7 @@
-const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
 const logger = require('../utils/logger')
+const { userExtractor } = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
@@ -10,20 +9,9 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs)
 })
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body
-
-  const token = request.token
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken.id) {
-    const error = { error: 'token missing or invalid' }
-    logger.error(error.error)
-    return response
-      .status(401)
-      .json(error)
-  }
-
-  const user = await User.findById(decodedToken.id)
+  const user = request.user
   if (!body.likes) body.likes = 0
 
   const blog = new Blog({
@@ -47,20 +35,12 @@ blogsRouter.get('/:id', async (request, response) => {
   else response.status(404).end()
 })
 
-blogsRouter.delete('/:id', async (request, response) => {
-  const token = request.token
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  if (!token || !decodedToken.id) {
-    const error = { error: 'token missing or invalid' }
-    logger.error(error.error)
-    return response
-      .status(401)
-      .json(error)
-  }
-
-  const user = await User.findById(decodedToken.id)
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
+  const user = request.user
   const blog = await Blog.findById(request.params.id)
-  if (user.id.toString() !== blog.user.toString()) {
+  if (!blog) {
+    response.status(204).end()
+  } else if (user.id.toString() !== blog.user.toString()) {
     const error = { error: 'authentication failed' }
     logger.error(error.error)
     return response
@@ -68,6 +48,7 @@ blogsRouter.delete('/:id', async (request, response) => {
       .json(error)
   }
 
+  await Blog.findByIdAndRemove(request.params.id)
   response.status(204).end()
 })
 
