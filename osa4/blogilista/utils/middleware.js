@@ -2,7 +2,7 @@ const logger = require('./logger')
 
 const requestLogger = (request, response, next) => {
   const body = Object.assign({}, request.body)
-  if (request.path === '/api/users') delete body.password
+  if (request.path === '/api/users' || request.path === '/api/login') body.password = '***'
   const bodyToLog = request.method === 'POST' || request.method === 'PUT'
     ? JSON.stringify(body)
     : ''
