@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
+const logger = require('../utils/logger')
 
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({})
@@ -9,8 +10,26 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
   const body = request.body
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(body.password, saltRounds)
+
+  if (body.password === undefined) {
+    const error = {
+      error: 'User validation failed: password is required'
+    }
+    logger.error(error.error)
+    return response
+      .status(400)
+      .json(error)
+  } else if (body.password.length < 3) {
+    const error = {
+      error: 'User validation failed: password must be at least 3 characters'
+    }
+    logger.error(error.error)
+    return response
+      .status(400)
+      .json(error)
+  }
+
+  const passwordHash = await bcrypt.hash(body.password, 10)
 
   const user = new User({
     username: body.username,
