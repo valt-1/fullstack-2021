@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -8,6 +9,8 @@ const App = () => {
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
+
+  const [notification, setNotification] = useState(null)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -24,21 +27,37 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
     }
   }, [])
 
-  const addBlog = async (event) => {
+  const notify = (message) => {
+    setNotification(message)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
+
+  const addBlog = (event) => {
     event.preventDefault()
     const blogObject = {
       title: blogTitle,
       author: blogAuthor,
       url: blogUrl
     }
-    const returnedBlog = await blogService.create(blogObject)
-    setBlogs(blogs.concat(returnedBlog))
-    setBlogTitle('')
-    setBlogAuthor('')
-    setBlogUrl('')
+    
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        notify(`added blog "${blogTitle}" by ${blogAuthor}`)
+        setBlogTitle('')
+        setBlogAuthor('')
+        setBlogUrl('')
+      })
+      .catch((error) => {
+        notify('adding new blog failed, provide at least blog title and url')
+      })
   }
 
   const handleLogin = async (event) => {
@@ -53,7 +72,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      console.log('wrong credentials')
+      notify('login failed')
     }
   }
 
@@ -61,12 +80,14 @@ const App = () => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBloglistUser')
     setUser(null)
+    notify('logged out')
   }
 
   if (user === null) {
     return (
       <div>
         <h2>log in</h2>
+        <Notification message={notification} />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -95,6 +116,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notification} />
       <p>
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
