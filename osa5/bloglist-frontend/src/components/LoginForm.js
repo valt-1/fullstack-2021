@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 const LoginForm = ({
   handleSubmit,
@@ -7,7 +7,7 @@ const LoginForm = ({
   username,
   password
 }) => {
-  return(
+  return (
     <form onSubmit={handleSubmit}>
       <div>
         username
