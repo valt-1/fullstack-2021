@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const blogStyle = {
     padding: 2,
     backgroundColor: '#fce3f9',
@@ -11,6 +11,18 @@ const Blog = ({ blog }) => {
 
   const toggleShowAll = () => {
     setShowAll(!showAll)
+  }
+
+  const incrementLikes = (event) => {
+    event.preventDefault()
+    const updatedBlog = {
+      user: blog.user.id,
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+    updateBlog(updatedBlog, blog.id)
   }
 
   if (!showAll) {
@@ -25,7 +37,7 @@ const Blog = ({ blog }) => {
     <div style={blogStyle}>
       {blog.title} {blog.author} <button onClick={toggleShowAll}>hide</button><br/>
       {blog.url}<br/>
-      likes: {blog.likes} <button>like</button><br/>
+      likes: {blog.likes} <button onClick={incrementLikes}>like</button><br/>
       {blog.user.name}
     </div>  
   )
