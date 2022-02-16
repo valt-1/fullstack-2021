@@ -7,7 +7,7 @@ const Notification = ({ message }) => {
     borderRadius: 10,
     padding: 8
   }
-  
+
   if (message === null) {
     return null
   }

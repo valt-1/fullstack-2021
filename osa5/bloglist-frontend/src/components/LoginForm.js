@@ -12,10 +12,10 @@ const LoginForm = ({
       <div>
         username
         <input
-        type='text'
-        value={username}
-        name='username'
-        onChange={handleUsernameChange}
+          type='text'
+          value={username}
+          name='username'
+          onChange={handleUsernameChange}
         />
       </div>
       <div>

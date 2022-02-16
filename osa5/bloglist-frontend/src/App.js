@@ -20,7 +20,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const App = () => {
         setBlogs(blogs.concat(returnedBlog))
         notify(`added blog "${blogObject.title}" by ${blogObject.author}`)
       })
-      .catch((error) => {
+      .catch(() => {
         notify('adding new blog failed, provide at least blog title and url')
       })
   }
@@ -65,17 +65,17 @@ const App = () => {
   const deleteBlog = (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
       blogService
-      .remove(blog.id)
-      .then(blogService.getAll()
-        .then(blogs => {
-          setBlogs(blogs
-            .filter(b => b.id !== blog.id)
-            .sort((b1, b2) => b2.likes - b1.likes))
-          notify(`Removed blog ${blog.title} by ${blog.author}`)
-        })
-      .catch((error) => {
-        notify(error.message)
-      }))
+        .remove(blog.id)
+        .then(blogService.getAll()
+          .then(blogs => {
+            setBlogs(blogs
+              .filter(b => b.id !== blog.id)
+              .sort((b1, b2) => b2.likes - b1.likes))
+            notify(`Removed blog ${blog.title} by ${blog.author}`)
+          })
+          .catch((error) => {
+            notify(error.message)
+          }))
     }
   }
 
@@ -113,7 +113,7 @@ const App = () => {
       <div>
         <h2>log in</h2>
         <Notification message={notification} />
-        <LoginForm 
+        <LoginForm
           username={username}
           password={password}
           handleUsernameChange={({ target }) => setUsername(target.value)}
@@ -134,7 +134,7 @@ const App = () => {
       </p>
       {blogForm()}
       {blogs.map(blog =>
-        <Blog 
+        <Blog
           key={blog.id} blog={blog}
           updateBlog={updateBlog}
           deleteBlog={() => deleteBlog(blog)}
