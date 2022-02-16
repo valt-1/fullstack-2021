@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, updateBlog }) => {
+const Blog = ({ blog, updateBlog, deleteBlog, addedByUser }) => {
   const blogStyle = {
     padding: 2,
     backgroundColor: '#fce3f9',
@@ -33,12 +33,17 @@ const Blog = ({ blog, updateBlog }) => {
     )
   }
 
+  const removeButton = addedByUser
+    ? <button onClick={deleteBlog}>remove</button>
+    : ''
+
   return (
     <div style={blogStyle}>
       {blog.title} {blog.author} <button onClick={toggleShowAll}>hide</button><br/>
       {blog.url}<br/>
       likes: {blog.likes} <button onClick={incrementLikes}>like</button><br/>
-      {blog.user.name}
+      {blog.user.name}<br/>
+      {removeButton}
     </div>  
   )
 }

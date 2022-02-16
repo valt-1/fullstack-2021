@@ -62,6 +62,23 @@ const App = () => {
       })
   }
 
+  const deleteBlog = (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      blogService
+      .remove(blog.id)
+      .then(blogService.getAll()
+        .then(blogs => {
+          setBlogs(blogs
+            .filter(b => b.id !== blog.id)
+            .sort((b1, b2) => b2.likes - b1.likes))
+          notify(`Removed blog ${blog.title} by ${blog.author}`)
+        })
+      .catch((error) => {
+        notify(error.message)
+      }))
+    }
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -117,7 +134,12 @@ const App = () => {
       </p>
       {blogForm()}
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+        <Blog 
+          key={blog.id} blog={blog}
+          updateBlog={updateBlog}
+          deleteBlog={() => deleteBlog(blog)}
+          addedByUser={blog.user.name === user.name}
+        />
       )}
     </div>
   )
