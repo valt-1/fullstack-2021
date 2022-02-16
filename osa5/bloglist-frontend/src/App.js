@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -11,6 +12,7 @@ const App = () => {
   const [blogTitle, setBlogTitle] = useState('')
   const [blogAuthor, setBlogAuthor] = useState('')
   const [blogUrl, setBlogUrl] = useState('')
+  const blogFormRef = useRef()
 
   const [notification, setNotification] = useState(null)
 
@@ -47,7 +49,7 @@ const App = () => {
       author: blogAuthor,
       url: blogUrl
     }
-    
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlog => {
@@ -85,6 +87,20 @@ const App = () => {
     notify('logged out')
   }
 
+  const blogForm = () => (
+    <Togglable buttonLabel='new blog' ref={blogFormRef}>
+      <BlogForm 
+        title={blogTitle}
+        author={blogAuthor}
+        url={blogUrl}
+        handleTitleChange={({ target }) => setBlogTitle(target.value)}
+        handleAuthorChange={({ target }) => setBlogAuthor(target.value)}
+        handleUrlChange={({ target }) => setBlogUrl(target.value)}
+        handleSubmit={addBlog}
+      />
+    </Togglable>
+  )
+
   if (user === null) {
     return (
       <div>
@@ -109,16 +125,7 @@ const App = () => {
         {user.name} logged in
         <button onClick={handleLogout}>logout</button>
       </p>
-      <h3>add blog</h3>
-      <BlogForm 
-        title={blogTitle}
-        author={blogAuthor}
-        url={blogUrl}
-        handleTitleChange={({ target }) => setBlogTitle(target.value)}
-        handleAuthorChange={({ target }) => setBlogAuthor(target.value)}
-        handleUrlChange={({ target }) => setBlogUrl(target.value)}
-        handleSubmit={addBlog}
-      />
+      {blogForm()}
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
