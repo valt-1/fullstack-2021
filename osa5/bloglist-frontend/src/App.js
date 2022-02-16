@@ -19,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))
     )  
   }, [])
 
@@ -56,7 +56,7 @@ const App = () => {
     blogService
       .update(blogObject, blogId)
       .then(blogService.getAll()
-        .then(blogs => setBlogs(blogs)))
+        .then(blogs => setBlogs(blogs.sort((b1, b2) => b2.likes - b1.likes))))
       .catch((error) => {
         notify(error.message)
       })
