@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 describe('Blog component', () => {
-  let container
   const blog = {
     title: 'React patterns',
     author: 'Michael Chan',
@@ -20,7 +19,7 @@ describe('Blog component', () => {
   const options = { exact: false }
 
   beforeEach(() => {
-    container = render(<Blog blog={blog} updateBlog={updateBlog} />).container
+    render(<Blog blog={blog} updateBlog={updateBlog} />)
   })
 
   test('Only blog title and author are rendered', () => {
@@ -28,13 +27,13 @@ describe('Blog component', () => {
     const author = screen.getByText('Michael Chan', options)
     expect(title).toBeDefined()
     expect(author).toBeDefined()
-  
+
     const url = screen.queryByText('https://reactpatterns.com/', options)
     const likes = screen.queryByText('999', options)
     expect(url).toBeNull()
     expect(likes).toBeNull()
   })
-  
+
   test('Blog url and likes are also rendered when button clicked', () => {
     const button = screen.getByText('view')
     userEvent.click(button)
@@ -59,5 +58,5 @@ describe('Blog component', () => {
 
     expect(updateBlog.mock.calls).toHaveLength(2)
   })
-  
+
 })
