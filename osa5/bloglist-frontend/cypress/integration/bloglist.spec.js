@@ -45,7 +45,7 @@ describe ('Blog app', function() {
       cy.get('#loginButton').click()
     })
 
-    it.only('A blog can be created', function() {
+    it('A blog can be created', function() {
       cy.contains('new blog').click()
 
       cy.get('#blogTitle').type('Canonical string reduction')
