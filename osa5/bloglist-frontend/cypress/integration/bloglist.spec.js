@@ -65,7 +65,7 @@ describe ('Blog app', function() {
         })
       })
 
-      it.only('Blog can be liked', function() {
+      it('Blog can be liked', function() {
         cy.get('.blogs')
           .contains('First class tests')
           .contains('view')
@@ -79,6 +79,22 @@ describe ('Blog app', function() {
         cy.get('.blogs')
           .contains('First class tests')
           .contains('likes: 1')
+      })
+
+      it('Blog can be removed by user that added blog', function() {
+        cy.get('.blogs')
+          .contains('First class tests')
+          .contains('view')
+          .click()
+
+        cy.get('.blogs')
+          .contains('First class tests')
+          .contains('remove')
+          .click()
+
+        cy.get('.blogs')
+          .contains('First class tests')
+          .should('not.exist')
       })
 
     })
