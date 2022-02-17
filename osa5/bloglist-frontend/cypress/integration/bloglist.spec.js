@@ -37,4 +37,26 @@ describe ('Blog app', function() {
 
   })
 
+  describe('When logged in', function() {
+
+    beforeEach(function() {
+      cy.get('#username').type('ratis')
+      cy.get('#password').type('password123')
+      cy.get('#loginButton').click()
+    })
+
+    it.only('A blog can be created', function() {
+      cy.contains('new blog').click()
+
+      cy.get('#blogTitle').type('Canonical string reduction')
+      cy.get('#blogAuthor').type('Edsger W. Dijkstra')
+      cy.get('#blogUrl').type('http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html')
+      cy.contains('save').click()
+
+      cy.contains('added blog')
+      cy.get('.blogs').contains('Canonical string reduction Edsger W. Dijkstra')
+    })
+
+  })
+
 })

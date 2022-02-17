@@ -133,14 +133,16 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </p>
       {blogForm()}
-      {blogs.map(blog =>
-        <Blog
-          key={blog.id} blog={blog}
-          updateBlog={updateBlog}
-          deleteBlog={() => deleteBlog(blog)}
-          addedByUser={blog.user.name === user.name}
-        />
-      )}
+      <span className='blogs'>
+        {blogs.map(blog =>
+          <Blog
+            key={blog.id} blog={blog}
+            updateBlog={updateBlog}
+            deleteBlog={() => deleteBlog(blog)}
+            addedByUser={blog.user.name === user.name}
+          />
+        )}
+      </span>
     </div>
   )
 }
