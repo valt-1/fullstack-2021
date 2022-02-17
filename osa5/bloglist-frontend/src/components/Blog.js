@@ -41,7 +41,7 @@ const Blog = ({ blog, updateBlog, deleteBlog, addedByUser }) => {
     <div style={blogStyle}>
       {blog.title} {blog.author} <button onClick={toggleShowAll}>hide</button><br/>
       {blog.url}<br/>
-      likes: {blog.likes} <button onClick={incrementLikes}>like</button><br/>
+      likes: {blog.likes} <button onClick={incrementLikes} id='likeButton'>like</button><br/>
       {blog.user.name}<br/>
       {removeButton}
     </div>
